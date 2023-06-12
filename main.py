@@ -1,114 +1,168 @@
 import pygame
-import sys
+from pygame.locals import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
 import random
-from Player import Player
-from Obstacle import Obstacle
-from Utils import load_images, select_obstacle_image, get_obstacle_random_position, collision_check, show_message
 from Config import *
 
-# Inicializar Pygame
-pygame.init()
+def Ground():
+    glBegin(GL_QUADS)
 
-# Configurar la ventana del juego
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-road = pygame.image.load(ROAD_IMAGE_PATH)
+    x = 0
+    for vertex in ground_vertices:
+        x += 1
+        glColor3fv((0, 1, 1))
+        glVertex3fv(vertex)
 
-# color variable
-# Its a rgb value of white color
-white = (255, 255, 255)
-# first make variables of position of road
-roadx = 0
-roady = 0
+    glEnd()
 
-# Configurar el personaje
-player_size = (WIDTH // 8, HEIGHT // 5)
-player_pos = [WIDTH // 2, HEIGHT - player_size[1] - 20]
 
-# Configurar los obstáculos
-OBSTACLE_SIZE = 80
-obstacle_pos = [random.randint(FRONTIER, WIDTH - OBSTACLE_SIZE - FRONTIER), 0]
-OBSTACLE_SPEED = 1.5 * VELOCITY
+def Cube():
+    glBegin(GL_QUADS)
 
-# Configurar las vidas y el puntaje
-lives = 3
-score = 0
+    for surface in surfaces:
 
-# Cargar las imágenes
-player_img, collision_img, obstacle_images = load_images(player_size)
+        for vertex in surface:
+            x += 1
+            glColor3fv(colors[x])
+            glVertex3fv(vertices[vertex])
 
-current_select_obstacle_image = select_obstacle_image(obstacle_images)
+    glEnd()
 
-# Configurar la fuente para el puntaje
-font = pygame.font.Font(None, 36)
+    glBegin(GL_LINES)
+    for edge in edges:
+        for vertex in edge:
+            glVertex3fv(vertices[vertex])
+    glEnd()
 
-# Crear instancia de la clase Player
-player = Player(player_pos, player_img, collision_img)
 
-# Crear instancia de la clase Obstacle
-obstacle = Obstacle(obstacle_pos, OBSTACLE_SIZE, OBSTACLE_SPEED, current_select_obstacle_image)
+def set_vertices(max_distance):
+    x_value_change = random.randrange(-5, 5)
+    y_value_change = 0  # random.randrange(-10,10)
+    z_value_change = random.randrange(-1 * max_distance, -20)
 
-# Bucle principal del juego
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+    new_vertices = []
+    for vert in vertices:
+        new_vert = []
 
-    # Ahora agregamos VELOCITY a la posición de la carretera
-    roady += VELOCITY
-    # Esto agrega el valor VELOCITY a la posición y de la carretera, lo que hace que parezca que se está moviendo
+        new_x = vert[0] + x_value_change
+        new_y = vert[1] + y_value_change
+        new_z = vert[2] + z_value_change
 
-    # Ahora creamos una condición if
-    if roady == STEP_BLIP:
-        roady = 0
-    # Esto establece la posición de roady nuevamente en su posición original
-    # Ahora tenemos que dibujar la carretera en la pantalla
-    # Tenemos dos argumentos, el nombre de la imagen y la posición de la imagen en x e y
-    # Vamos a dibujar otra carretera
-    # Pero no en la posición de la carretera inicial, sino detrás de la imagen de la carretera inicial, es decir, roady - STEP_BLIP
-    screen.blit(road, (roadx, roady - STEP_BLIP))
-    screen.blit(road, (roadx, roady))
+        new_vert.append(new_x)
+        new_vert.append(new_y)
+        new_vert.append(new_z)
 
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        player.move_left(STEP_BLIP / 25)
-    if keys[pygame.K_RIGHT]:
-        player.move_right(STEP_BLIP / 25)
+        new_vertices.append(new_vert)
 
-    # Mover el obstáculo hacia el personaje
-    obstacle.move()
-    if obstacle.pos[1] > HEIGHT:
-        obstacle.pos = get_obstacle_random_position(FRONTIER, WIDTH - FRONTIER - OBSTACLE_SIZE)
-        obstacle.image = select_obstacle_image(obstacle_images)
-        score += 1  # Incrementar el puntaje cuando el personaje esquiva un obstáculo
+    return new_vertices
 
-    collided = collision_check(player.get_rect(), obstacle.get_rect())
-    if collided:
-        lives -= 1
-        player.draw(screen, collided)
-        if lives == 0:
-            show_message(screen, font, "You Lose!")
-            pygame.quit()
-            sys.exit()
-        else:
-            obstacle.pos = get_obstacle_random_position(FRONTIER, WIDTH - FRONTIER - OBSTACLE_SIZE)
 
-    # Verificar si el jugador ha ganado
-    # Asume que TARGET_SCORE es el puntaje que el jugador necesita para ganar
-    if score == TARGET_SCORE:
-        show_message(screen, font, "You Win!")
-        pygame.quit()
-        sys.exit()
+def Cubes(new_vertices):
+    glBegin(GL_QUADS)
 
-    player.draw(screen, collided)
-    obstacle.draw(screen)
+    for surface in surfaces:
+        x = 0
 
-    # Dibujar el puntaje
-    score_text = font.render("Puntajes: " + str(score), 1, (255, 255, 255))
-    screen.blit(score_text, (10, 10))
+        for vertex in surface:
+            x += 1
+            glColor3fv(colors[x])
+            glVertex3fv(new_vertices[vertex])
 
-    # Dibujar las vidas
-    lives_text = font.render("Vidas: " + str(lives), 1, (255, 255, 255))
-    screen.blit(lives_text, (10, 50))
+    glEnd()
 
-    pygame.display.update()
+
+# CUT LINES BC THEY HURT PROCESSING
+##    glBegin(GL_LINES)
+##    for edge in edges:
+##        for vertex in edge:
+##            glVertex3fv(new_vertices[vertex])
+##    glEnd()
+
+
+def main():
+    pygame.init()
+    display = (800, 600)
+    pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
+
+    gluPerspective(45, (display[0] / display[1]), 0.1, 150.0)
+    glTranslatef(random.randrange(-5, 5), 0, -20)
+
+    x_move = 0
+    y_move = 0
+
+    max_distance = 300
+
+    cube_dict = {}
+    cube_dict_temp = {}
+
+    for x in range(60):
+        cont = 0
+        cube_dict_temp[x] = set_vertices(max_distance)
+        if x == 0:
+            cube_dict[x] = set_vertices(max_distance)
+        if x > 0:
+            for i in range(x):
+                if cube_dict_temp[x] != cube_dict_temp[i]:
+                    cont = cont + 1
+                if cont == x:
+                    cube_dict[x] = set_vertices(max_distance)
+                    print(cube_dict[x])
+
+    # cube_dict = {}
+    #
+    # for x in range(60):
+    #     cube_dict[x] = set_vertices(max_distance)
+    #     #for i in range(x):
+    #         #cube_dict_tmp[x] intersecta con cube_dict_tmp[i] i = {0, x-1}
+
+    object_passed = False
+
+    while not object_passed:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.KEYDOWN:
+
+                if event.key == pygame.K_LEFT:
+                    x_move = 0.3
+
+                if event.key == pygame.K_RIGHT:
+                    x_move = -0.3
+
+                if event.key == pygame.K_UP:
+                    y_move = 0.3
+
+                if event.key == pygame.K_DOWN:
+                    y_move = -0.3
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT:
+                    x_move = 0
+
+                if event.key == pygame.K_RIGHT:
+                    x_move = 0
+
+                if event.key == pygame.K_UP:
+                    y_move = 0
+
+                if event.key == pygame.K_DOWN:
+                    y_move = 0
+
+        x = glGetDoublev(GL_MODELVIEW_MATRIX)
+
+        camera_x = x[3][0]
+        camera_y = x[3][1]
+        camera_z = x[3][2]
+
+        glTranslatef(x_move, 0.0, y_move)
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        Ground()
+        for each_cube in cube_dict:
+            Cubes(cube_dict[each_cube])
+        pygame.display.flip()
+
+main()
