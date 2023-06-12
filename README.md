@@ -11,7 +11,6 @@ Un juego de carreras en 2D donde debes evitar choques con obstáculos y sobreviv
 | Asset  | player.png| [Vecteezy](https://es.vecteezy.com)                                                        | Vehículo que sirve como personaje para el juego    |
 | Asset  | collision.png| [Vecteezy](https://es.vecteezy.com)                                                    | Colisión del personaje contra un obstáculo          |
 | Assets | [obstacle_1.png, obstacle_2.png, obstacle_3.png, obstacle_4.png, obstacle_5.png, obstacle_6.png] | [Vecteezy](https://es.vecteezy.com) | Vehículos que sirven como obstáculos para el juego |
-| Idea   | Ninguno | [Video del movimiento de un plano con cubos](https://pythonprogramming.net/adding-ground-pyopengl-tutorial/?completed=/multiple-opengl-cubes/)              | Video del cubos 3D|
 
 ## Instalación
 
