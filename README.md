@@ -19,6 +19,7 @@ Asegúrate de tener instaladas las siguientes versiones de las bibliotecas reque
 
 * numpy==1.21.6
 * pygame==2.4.0
+* PyOpenGL==3.1.5
 
 Ejecuta el **main.py**, y... ¡A jugar!
 
