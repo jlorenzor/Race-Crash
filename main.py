@@ -54,18 +54,18 @@ while True:
             pygame.quit()
             sys.exit()
 
-    # Now add VELOCITY in the position of road
+    # Ahora agregamos VELOCITY a la posición de la carretera
     roady += VELOCITY
-    # it will add VELOCITY value in road y position of road, it seems like it is moving
+    # Esto agrega el valor VELOCITY a la posición y de la carretera, lo que hace que parezca que se está moviendo
 
-    # NOw make an if condition
+    # Ahora creamos una condición if
     if roady == STEP_BLIP:
         roady = 0
-    # it will take roady position back to its position
-    # Now we have to blit the screen to show our road
-    # there are two arguments, one is the image name and the position of the image in x and y
-    # lets blit another road
-    # but not on the first road position but behind the first road image, means roady -600
+    # Esto establece la posición de roady nuevamente en su posición original
+    # Ahora tenemos que dibujar la carretera en la pantalla
+    # Tenemos dos argumentos, el nombre de la imagen y la posición de la imagen en x e y
+    # Vamos a dibujar otra carretera
+    # Pero no en la posición de la carretera inicial, sino detrás de la imagen de la carretera inicial, es decir, roady - STEP_BLIP
     screen.blit(road, (roadx, roady - STEP_BLIP))
     screen.blit(road, (roadx, roady))
 
