@@ -34,7 +34,10 @@ Asegúrate de estar atento a la velocidad y posición de los obstáculos. ¡Divi
 
 ## Contribución
 
-Instrucciones para que otros contribuyan al proyecto.
+Integrantes del proyecto:
+* Lorenzo Rojas, Jhonny Stuart
+* Rojas Sánchez, Alexander Miller
+* Villarroel Lajo,Gerald Takeshi
 
 ## Licencia
 
