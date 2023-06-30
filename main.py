@@ -1,6 +1,10 @@
 import pygame
 import sys
 import random
+import cv2
+from Camera import Camera
+from MediapipeRecognition import Recognition
+
 from Player import Player
 from Obstacle import Obstacle
 from Utils import load_images, select_obstacle_image, get_obstacle_random_position, collision_check, show_message
@@ -19,6 +23,14 @@ white = (255, 255, 255)
 # first make variables of position of road
 roadx = 0
 roady = 0
+
+#############Camara#############
+Camera1 = Camera()
+Camera1.cameraSetting()
+#############Camara#############
+
+# # configuraciones adicionales
+# # link de referencia: https://docs.opencv.org/3.4/d8/dfe/classcv_1_1VideoCapture.html#a8c6d8c2d37505b5ca61ffd4bb54e9a7c
 
 # Configurar el personaje
 player_size = (WIDTH // 8, HEIGHT // 5)
@@ -47,6 +59,7 @@ player = Player(player_pos, player_img, collision_img)
 # Crear instancia de la clase Obstacle
 obstacle = Obstacle(obstacle_pos, OBSTACLE_SIZE, OBSTACLE_SPEED, current_select_obstacle_image)
 
+
 # Bucle principal del juego
 while True:
     for event in pygame.event.get():
@@ -68,13 +81,7 @@ while True:
     # Pero no en la posición de la carretera inicial, sino detrás de la imagen de la carretera inicial, es decir, roady - STEP_BLIP
     screen.blit(road, (roadx, roady - STEP_BLIP))
     screen.blit(road, (roadx, roady))
-
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        player.move_left(STEP_BLIP / 25)
-    if keys[pygame.K_RIGHT]:
-        player.move_right(STEP_BLIP / 25)
-
+    
     # Mover el obstáculo hacia el personaje
     obstacle.move()
     if obstacle.pos[1] > HEIGHT:
@@ -111,4 +118,17 @@ while True:
     lives_text = font.render("Vidas: " + str(lives), 1, (255, 255, 255))
     screen.blit(lives_text, (10, 50))
 
+    #####Camara#####
+    img = Camera1.readCamera()
+    #####Camara#####
+
+    #############Semana14##################
+    Recognition1 = Recognition(player, img)
+
+    l = Recognition1.secondSet()
+    #############Semana14##################
+
+    cv2.imshow('Detector', img)
+    cv2.waitKey(10)
+    #############Semana14##################
     pygame.display.update()
