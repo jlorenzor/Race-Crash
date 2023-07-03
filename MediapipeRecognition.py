@@ -2,7 +2,6 @@ import mediapipe as mp
 import cv2
 import math
 import time
-from Player import Player
 from Config import *
 
 
@@ -17,6 +16,7 @@ class Recognition:
         self.estado = 'X'
         self.inicio = 0
         self.estado_actual = ''
+        self.final = 0
 
     def secondSet(self):
         results = self.faceMesh.process(self.img)
@@ -26,42 +26,39 @@ class Recognition:
             if not results.multi_face_landmarks:
                 return 0
             for face in results.multi_face_landmarks:
-                # print(face)
                 self.mpDraw.draw_landmarks(self.img, face, self.mpFaceMesh.FACEMESH_FACE_OVAL)
                 d1x, d1y = int((face.landmark[159].x) * w), int((face.landmark[159].y) * h)
                 d2x, d2y = int((face.landmark[145].x) * w), int((face.landmark[145].y) * h)
                 i1x, i1y = int((face.landmark[386].x) * w), int((face.landmark[386].y) * h)
                 i2x, i2y = int((face.landmark[374].x) * w), int((face.landmark[374].y) * h)
 
+                boca_top_x, boca_top_y = int((face.landmark[13].x) * w), int((face.landmark[13].y) * h)
+                boca_bottom_x, boca_bottom_y = int((face.landmark[14].x) * w), int((face.landmark[14].y) * h)
+
+                distD_boca = math.hypot(boca_top_x - boca_bottom_x, boca_top_y - boca_bottom_y)
+
                 distD = math.hypot(d1x - d2x, d1y - d2y)
                 distI = math.hypot(i1x - i2x, i1y - i2y)
 
-                # print(f'distD: {distD}, distI: {distI}')
-                if distI <= 15 and distD <= 15:  # Default 15
-                    print('ojos cerrados')
+                if distD_boca > 10:
+                    print('mover derecha')
 
                     self.player.move_left(STEP_BLIP / 25)
 
-                    cv2.rectangle(self.img, (100, 30), (390, 80), (0, 0, 255), -1)
-                    cv2.putText(self.img, 'OJOS CERRADOS', (105, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
-                    self.estado = 'Dormido'
-                    if self.estado != self.estado_actual:
-                        self.inicio = time.time()
+                    cv2.rectangle(self.img, (100, 30), (370, 80), (0, 0, 255), -1)
+                    cv2.putText(self.img, 'A LA DERECHA', (105, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
+
                 else:
-                    print('ojos abiertos')
+                    print('mover izquierda')
 
                     self.player.move_right(STEP_BLIP / 25)
-                    cv2.rectangle(self.img, (100, 30), (390, 80), (255, 0, 0), -1)
-                    cv2.putText(self.img, 'OJOS ABIERTOS', (105, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
-                    self.estado = 'Despierto'
-                    self.inicio = time.time()
-                    tiempo = int(time.time() - self.inicio)
+                    cv2.rectangle(self.img, (100, 30), (370, 80), (255, 0, 0), -1)
+                    cv2.putText(self.img, 'A LA IZQUIERDA', (105, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
 
-                if self.estado == 'Dormido':
-                    tiempo = int(time.time() - self.inicio)
+                if distI <= 16 and distD <= 16:
+                    print('ojos cerrados')
 
-                if tiempo >= 2:
-                    cv2.rectangle(self.img, (300, 150), (850, 220), (0, 0, 255), -1)
-                    cv2.putText(self.img, f'DORMIDO: {tiempo} SEG', (310, 200), cv2.FONT_HERSHEY_SIMPLEX, 1.7,
-                                (255, 255, 255), 5)
-                self.estado_actual = self.estado
+                    self.final = time.time()
+                    print(self.final)
+
+                    return self.final
