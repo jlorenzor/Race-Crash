@@ -41,24 +41,24 @@ class Recognition:
                 distI = math.hypot(i1x - i2x, i1y - i2y)
 
                 if distD_boca > 10:
-                    print('mover derecha')
+                    # print('mover IZQUIERDA')
 
                     self.player.move_left(STEP_BLIP / 25)
 
                     cv2.rectangle(self.img, (100, 30), (370, 80), (0, 0, 255), -1)
-                    cv2.putText(self.img, 'A LA DERECHA', (105, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
+                    cv2.putText(self.img, 'A LA IZQUIERDA', (105, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
 
                 else:
-                    print('mover izquierda')
+                    # print('mover DERECHA')
 
                     self.player.move_right(STEP_BLIP / 25)
                     cv2.rectangle(self.img, (100, 30), (370, 80), (255, 0, 0), -1)
-                    cv2.putText(self.img, 'A LA IZQUIERDA', (105, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
+                    cv2.putText(self.img, 'A LA DERECHA', (105, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
 
-                if distI <= 16 and distD <= 16:
-                    print('ojos cerrados')
-
-                    self.final = time.time()
-                    print(self.final)
-
-                    return self.final
+                # if distI <= 16 and distD <= 16:
+                #     print('ojos cerrados')
+                #
+                #     self.final = time.time()
+                #     print(self.final)
+                #
+                #     return self.final

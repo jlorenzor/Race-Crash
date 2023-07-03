@@ -3,7 +3,7 @@ import sys
 import random
 import cv2
 from Camera import Camera
-from MediapipeRecognition import Recognition
+from MediaPipeRecognition import Recognition
 
 from Player import Player
 from Obstacle import Obstacle
@@ -17,10 +17,7 @@ pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 road = pygame.image.load(ROAD_IMAGE_PATH)
 
-# color variable
-# Its a rgb value of white color
 white = (255, 255, 255)
-# first make variables of position of road
 roadx = 0
 roady = 0
 
@@ -38,11 +35,10 @@ player_pos = [WIDTH // 2, HEIGHT - player_size[1] - 20]
 
 # Configurar los obstáculos
 OBSTACLE_SIZE = 80
-obstacle_pos = [random.randint(FRONTIER, WIDTH - OBSTACLE_SIZE - FRONTIER), 0]
 OBSTACLE_SPEED = 1.5 * VELOCITY
 
 # Configurar las vidas y el puntaje
-lives = 3
+lives = MAX_LIVES
 score = 0
 
 # Cargar las imágenes
@@ -57,7 +53,7 @@ font = pygame.font.Font(None, 36)
 player = Player(player_pos, player_img, collision_img)
 
 # Crear instancia de la clase Obstacle
-obstacle = Obstacle(obstacle_pos, OBSTACLE_SIZE, OBSTACLE_SPEED, current_select_obstacle_image)
+obstacle = Obstacle(current_select_obstacle_image)
 
 check = True
 
@@ -85,21 +81,28 @@ while True:
 
     # Mover el obstáculo hacia el personaje
     obstacle.move()
-    if obstacle.pos[1] > HEIGHT:
-        obstacle.pos = get_obstacle_random_position(FRONTIER, WIDTH - FRONTIER - OBSTACLE_SIZE)
-        obstacle.image = select_obstacle_image(obstacle_images)
+    if obstacle.get_pos_y() > HEIGHT:
+        obstacle.generate_random_position()  # Seleccionamos aleatoriamente una nueva posición para el obstáculo
+        # Seleccionamos aleatoriamente una nueva imagen para el obstáculo
+        obstacle_new_image = select_obstacle_image(obstacle_images)
+        obstacle.set_image(obstacle_new_image)
         score += 1  # Incrementar el puntaje cuando el personaje esquiva un obstáculo
 
-    collided = collision_check(player.get_rect(), obstacle.get_rect())
+    # collided = collision_check(player.get_rect(), obstacle.get_rect())
+    collided = player.has_collided(obstacle)
     if collided:
         lives -= 1
         player.draw(screen, collided)
+        # Guardar los movimientos del jugador al ocurrir una colisión con un obstáculo
+        player_last_moves = player.get_last_moves()
+        obstacle.save_moves(player_last_moves)
         if lives == 0:
             show_message(screen, font, "You Lose!")
             pygame.quit()
             sys.exit()
         else:
-            obstacle.pos = get_obstacle_random_position(FRONTIER, WIDTH - FRONTIER - OBSTACLE_SIZE)
+            obstacle.generate_random_position()
+            print("--------------------\n")
 
     # Verificar si el jugador ha ganado
     # Asume que TARGET_SCORE es el puntaje que el jugador necesita para ganar
@@ -107,7 +110,6 @@ while True:
         show_message(screen, font, "You Win!")
         pygame.quit()
         exit(0)
-
 
     player.draw(screen, collided)
     obstacle.draw(screen)
@@ -127,10 +129,10 @@ while True:
     #############MediaPipe##################
 
     Recognition1 = Recognition(player, img)
-    print("Recognition object: ", Recognition1)
+    # print("Recognition object: ", Recognition1)
 
     l = Recognition1.secondSet()
-    print("l: ", l)
+    # print("l: ", l)
 
     if l != None and l != 0 and check == True:
         inicio = l
