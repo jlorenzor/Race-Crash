@@ -59,6 +59,7 @@ player = Player(player_pos, player_img, collision_img)
 # Crear instancia de la clase Obstacle
 obstacle = Obstacle(obstacle_pos, OBSTACLE_SIZE, OBSTACLE_SPEED, current_select_obstacle_image)
 
+check = True
 
 # Bucle principal del juego
 while True:
@@ -81,7 +82,7 @@ while True:
     # Pero no en la posición de la carretera inicial, sino detrás de la imagen de la carretera inicial, es decir, roady - STEP_BLIP
     screen.blit(road, (roadx, roady - STEP_BLIP))
     screen.blit(road, (roadx, roady))
-    
+
     # Mover el obstáculo hacia el personaje
     obstacle.move()
     if obstacle.pos[1] > HEIGHT:
@@ -105,7 +106,8 @@ while True:
     if score == TARGET_SCORE:
         show_message(screen, font, "You Win!")
         pygame.quit()
-        sys.exit()
+        exit(0)
+
 
     player.draw(screen, collided)
     obstacle.draw(screen)
@@ -122,13 +124,24 @@ while True:
     img = Camera1.readCamera()
     #####Camara#####
 
-    #############Semana14##################
+    #############MediaPipe##################
+
     Recognition1 = Recognition(player, img)
+    print("Recognition object: ", Recognition1)
 
     l = Recognition1.secondSet()
-    #############Semana14##################
+    print("l: ", l)
+
+    if l != None and l != 0 and check == True:
+        inicio = l
+        check = False
+    if l != None and l != 0 and check == False:
+        print("final e inicio: ", l - inicio)
+        if l - inicio > 15:
+            exit(0)
+    #############Mediapipe##################
 
     cv2.imshow('Detector', img)
     cv2.waitKey(10)
-    #############Semana14##################
+
     pygame.display.update()
