@@ -15,6 +15,6 @@ class Camera:
 
     def readCamera(self):
         check, img = self.cam.read()
-        img = cv2.resize(img, (1000, 720))
+        img = cv2.resize(img, (320, 250))#400, 320))#1000, 720
 
         return img

@@ -21,6 +21,11 @@ white = (255, 255, 255)
 roadx = 0
 roady = 0
 
+screen_info = pygame.display.Info()
+screen_width = screen_info.current_w
+screen_height = screen_info.current_h
+camera_pos = (screen_width - 100,0)
+
 #############Camara#############
 Camera1 = Camera()
 Camera1.cameraSetting()
@@ -124,6 +129,14 @@ while True:
 
     #####Camara#####
     img = Camera1.readCamera()
+  
+    #Poner camara en la esquina superior derecha del juego
+    frame = cv2.rotate(img, cv2.ROTATE_180)
+    frame = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    frame = pygame.surfarray.make_surface(frame)
+    frame = pygame.transform.rotate(frame, -90)
+    screen.blit(frame, (760, 0))
+
     #####Camara#####
 
     #############MediaPipe##################
@@ -139,11 +152,11 @@ while True:
         check = False
     if l != None and l != 0 and check == False:
         print("final e inicio: ", l - inicio)
-        if l - inicio > 15:
+        if l - inicio > 1:
             exit(0)
     #############Mediapipe##################
 
-    cv2.imshow('Detector', img)
+    #cv2.imshow('Detector', img)
     cv2.waitKey(10)
 
     pygame.display.update()

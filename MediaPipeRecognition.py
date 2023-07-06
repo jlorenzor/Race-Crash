@@ -55,8 +55,20 @@ class Recognition:
                     cv2.rectangle(self.img, (100, 30), (370, 80), (255, 0, 0), -1)
                     cv2.putText(self.img, 'A LA DERECHA', (105, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
 
-                if distI <= 16 and distD <= 16:
+                print(distI)
+                print(distD)
+                if distI <= 6 and distD <= 6:
+                    print(distI)
+                    print(distD)
                     print('¡OJOS CERRADOS!')
+
+
+
+
+
+
+
+
 
                     self.final = time.time()
                     print(self.final)
