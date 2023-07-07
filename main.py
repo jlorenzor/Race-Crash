@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import os
 import cv2
 from Camera import Camera
 from MediaPipeRecognition import Recognition
@@ -10,12 +11,19 @@ from Obstacle import Obstacle
 from Utils import load_images, select_obstacle_image, get_obstacle_random_position, collision_check, show_message
 from Config import *
 
+os.environ['SDL_VIDEO_WINDOW_POS'] = '0,0'
+
 # Inicializar Pygame
 pygame.init()
 
 # Configurar la ventana del juego
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 road = pygame.image.load(ROAD_IMAGE_PATH)
+
+screen_info = pygame.display.Info()
+screen_width, screen_height = screen_info.current_w, screen_info.current_h
+print(f"Width de la PC: {screen_width}")
+print(f"Width de la PC: {screen_height}")
 
 white = (255, 255, 255)
 roadx = 0

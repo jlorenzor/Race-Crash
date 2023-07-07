@@ -1,4 +1,5 @@
 import cv2
+import screeninfo
 
 
 class Camera:
@@ -10,11 +11,11 @@ class Camera:
 
     def cameraSetting(self):
         self.cam.set(3, 30)  # largo
-        self.cam.set(2, 20)  # alto
+        # self.cam.set(2, 20)  # alto
         self.cam.set(10, 150)  # brillo / luminosidad
 
     def readCamera(self):
         check, img = self.cam.read()
-        img = cv2.resize(img, (1000, 720))
+        # img = cv2.resize(img, (1000, 720))
 
         return img
